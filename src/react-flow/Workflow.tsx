@@ -79,7 +79,7 @@ function Workflow() {
   );
 
   return (
-    <Box component="section" sx={{ width: 1800, height: 1200, border: '1px dashed grey' }}>
+    <Box component="div" sx={{ width: '80vw', height: '80vh', border: '1px dashed grey' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
