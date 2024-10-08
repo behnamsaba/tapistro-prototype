@@ -1,7 +1,7 @@
 import type { NodeProps } from '@xyflow/react';
 
-import { Handle, Position } from '@xyflow/react';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { Handle, Position, useEdges, useReactFlow } from '@xyflow/react';
 
 import { Box, Paper, Typography } from '@mui/material';
 
@@ -16,15 +16,32 @@ interface OrderAmountSelectProps extends NodeProps {
   };
 }
 
-const OrderAmountSelect = ({ data } : OrderAmountSelectProps) => {
+const OrderAmountSelect = ({ data }: OrderAmountSelectProps) => {
   const { priorityOptions } = data;
-
-  // Initialize as an empty string to represent no selection
   const [selectedPriority, setSelectedPriority] = useState<string>('');
+  const { setEdges } = useReactFlow();
+  const edges = useEdges()
 
-  // Handle change using the appropriate event type
+  // Base list of all possible edges
+  const allEdgesRef = useRef(edges);
+
+  // Define which edges to exclude based on priority
+  const priorityToExcludedEdgeIds: Record<string, string[]> = {
+    High: ['e-3-6', 'e-6-7'],
+    Low: ['e-3-4', 'e-3-5', 'e-4-7', 'e-5-7'],
+  };
+
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPriority(event.target.value);
+    const {value} = event.target;
+    setSelectedPriority(value);
+
+    setEdges(() => {
+      // Retrieve the list of edge IDs to exclude for the selected priority
+      const excludedEdgeIds = priorityToExcludedEdgeIds[value] || [];
+
+      // Filter out the excluded edges from the base list
+      return allEdgesRef.current.filter((edge) => !excludedEdgeIds.includes(edge.id));
+    });
   };
 
   // Find the selected option based on the selectedPriority
@@ -36,8 +53,8 @@ const OrderAmountSelect = ({ data } : OrderAmountSelectProps) => {
     <Paper
       sx={{
         padding: 2,
-        backgroundColor: 'white',
-        borderRadius: 2,
+        backgroundColor: '#f7e9eb',
+        borderRadius: 5,
         boxShadow: 3,
         minWidth: 250,
       }}
@@ -68,7 +85,7 @@ const OrderAmountSelect = ({ data } : OrderAmountSelectProps) => {
           <Typography variant="subtitle1">
             Selected Priority: <strong>{selectedOption.priorityLevel}</strong>
           </Typography>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="primary">
             Amount: {selectedOption.amount}
           </Typography>
         </Box>
