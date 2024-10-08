@@ -1,6 +1,7 @@
 ## Tapistro Project ()
 
-workflow Management UI on top of starter project (material-kit-react)[https://github.com/minimal-ui-kit/material-kit-react], using (react-flow)[https://github.com/xyflow/xyflow] framework
+workflow Management UI on top of starter project [material-kit-react](https://github.com/minimal-ui-kit/material-kit-react), using [react-flow](https://github.com/xyflow/xyflow) framework
+
 
 ## Nodes
 
@@ -18,6 +19,10 @@ workflow Management UI on top of starter project (material-kit-react)[https://gi
 - **Start:** `npm run dev` or `yarn dev`
 - **Build:** `npm run build` or `yarn build`
 - Open browser: `http://localhost:3039`
+
+### Screenshot
+
+![image](https://github.com/user-attachments/assets/133e0888-8068-42cc-9021-58e54d55619c)
 
 
 ## License
