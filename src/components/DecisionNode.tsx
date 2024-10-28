@@ -1,20 +1,20 @@
-// ActionNode.tsx
+// DecisionNode.tsx
 import type { NodeProps } from '@xyflow/react';
 
 import { Handle, Position } from '@xyflow/react';
 
-import { Box, Paper, Stack, Divider, Typography } from '@mui/material';
+import { Paper, Stack, Divider, Typography, Box } from '@mui/material';
 
 import { paperStyles, dividerStyles, typographyStyles } from '../styles';
 
-interface ActionNodeProps extends NodeProps {
+interface DecisionNodeProps extends NodeProps {
   data: {
-    enrich: string;
-    API: string;
+    label: string;
+    description: string;
   };
 }
 
-const ActionNode = ({ data: { enrich, API } }: ActionNodeProps) => (
+const DecisionNode = ({ data: { description } }: DecisionNodeProps) => (
   <Paper
     component="div"
     elevation={1}
@@ -39,7 +39,7 @@ const ActionNode = ({ data: { enrich, API } }: ActionNodeProps) => (
         noWrap
         sx={{ ...typographyStyles }}
       >
-        Action
+        Decision Node
       </Typography>
 
       <Divider
@@ -50,10 +50,7 @@ const ActionNode = ({ data: { enrich, API } }: ActionNodeProps) => (
 
       <Box>
         <Typography variant="body2" color="primary" gutterBottom sx={{ fontSize: '0.6rem' }}>
-          <strong>Enrich:</strong> {enrich}
-        </Typography>
-        <Typography variant="body2" color="primary" gutterBottom sx={{ fontSize: '0.6rem' }}>
-          <strong>API:</strong> {API}
+          {description}
         </Typography>
       </Box>
     </Stack>
@@ -63,4 +60,4 @@ const ActionNode = ({ data: { enrich, API } }: ActionNodeProps) => (
   </Paper>
 );
 
-export default ActionNode;
+export default DecisionNode;

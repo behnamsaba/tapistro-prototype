@@ -1,31 +1,31 @@
 import '@xyflow/react/dist/style.css';
 
-import type { Node, Connection } from '@xyflow/react';
-
-import React, { useCallback } from 'react';
 import {
-  addEdge,
   Controls,
   ReactFlow,
   Background,
-  useNodesState,
-  useEdgesState,
 } from '@xyflow/react';
 
 import Box from '@mui/material/Box';
+
+import TitleForm from 'src/Forms/TitleForm';
+import BranchOption from 'src/Forms/BranchOption';
+import FormRoutes from 'src/Forms/FormRoutes';
+import DecisionNodeForm from 'src/Forms/DecisionNodeForm';
+import ConditionForm from 'src/Forms/ConditionForm';
 
 import ForkNode from 'src/components/ForkNode';
 import StartNode from 'src/components/StartNode';
 import ActionNode from 'src/components/ActionNode';
 import TerminalNode from 'src/components/TerminalNode';
+import DecisionNode from 'src/components/DecisionNode';
 import StartNodeDetails from 'src/components/StartNodeDetails';
 import OrderAmountSelect from 'src/components/OrderAmountSelect';
 import ActionNodeDetails from 'src/components/ActionNodeDetails';
 
-import { initialEdges } from './Edges';
-import { initialNodes } from './Nodes';
+import { useStore } from './store';
 
-// nodeTypes are memoized or defined outside of the component
+// Define node types outside of the component
 const nodeTypes = {
   StartNode,
   StartNodeDetails,
@@ -34,65 +34,65 @@ const nodeTypes = {
   OrderAmountSelect,
   ForkNode,
   TerminalNode,
+  DecisionNode,
 };
 
+
+
 function Workflow() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
-  );
-
-  const onNodeClick = useCallback(
-    (event: React.MouseEvent, clickedNode: Node) => {
-      console.log('Node clicked:', clickedNode);
-
-      const clickedId = clickedNode.id; // Get the ID of the clicked node
-
-      // Determine if the clicked node is a child node (contains a hyphen)
-      const isChildNode = clickedId.includes('-');
-
-      if (isChildNode) {
-        // **Child Node Clicked:** Toggle its own 'hidden' property
-        setNodes((nds) =>
-          nds.map((node) => {
-            if (node.id === clickedId) {
-              return { ...node, hidden: !node.hidden };
-            }
-            return node;
-          })
-        );
-      } else {
-        // **Parent Node Clicked:** Toggle 'hidden' for all child nodes starting with this ID
-        setNodes((nds) =>
-          nds.map((node) => {
-            if (node.id.startsWith(`${clickedId}-`) && node.id !== clickedId) {
-              return { ...node, hidden: !node.hidden };
-            }
-            return node;
-          })
-        );
-      }
-    },
-    [setNodes]
-  );
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    onNodeClick,
+  } = useStore();
 
   return (
-    <Box component="div" sx={{ width: '80vw', height: '80vh', border: '1px dashed grey' }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onNodeClick={onNodeClick}
-        nodeTypes={nodeTypes}
-        fitView
+    <Box
+      display="flex"
+      width="100vw"
+      height="90vh"
+    >
+      {/* Main Workflow Area */}
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        width="75vw"
+        height="100%"
+        border="1px dashed grey"
+        boxSizing="border-box" // Ensure padding and borders are included in the width and height
+        padding={2} // Optional padding for better spacing
       >
-        <Background />
-        <Controls />
-      </ReactFlow>
+        <TitleForm />
+        <Box flexGrow={1} width="100%" mt={2}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onNodeClick={onNodeClick}
+            nodeTypes={nodeTypes}
+            style={{ width: '100%', height: '100%' }}
+          >
+            <Background />
+            <Controls />
+          </ReactFlow>
+        </Box>
+      </Box>
+      <Box
+        width="25vw"
+        height="100%"
+        bgcolor="#f5f5f5" // Optional background color for distinction
+        boxSizing="border-box"
+        padding={2}
+        overflow="none"
+      >
+        <BranchOption />
+      </Box>
     </Box>
   );
 }

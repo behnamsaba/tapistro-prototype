@@ -1,65 +1,64 @@
 import { Handle, Position } from '@xyflow/react';
 
-import { Box, List, Paper, ListItem, Typography, ListItemText } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 interface StartNodeDetailsProps {
   data: {
     label: string;
-    CustomerID: string;
-    OrderID: string;
-    ItemsOrdered: string;
+    Source: string;
+    Configuration: string;
+    JobTitle: string;
+    Company: string;
+    Countries: string;
   };
 }
 
 const StartNodeDetails = ({
-  data: { label, CustomerID, OrderID, ItemsOrdered },
-}: StartNodeDetailsProps) => (
-  <Paper
-    component="section"
-    elevation={2}
-    sx={{
-      p: 2,
-      borderRadius: 5,
-      backgroundColor: '#f7e9eb',
-      width: 250,
-    }}
-  >
-    <Box mt={1}>
-      <Typography variant="body2" color="primary" gutterBottom>
-        {label}:
+  data: { label, Source, Configuration, JobTitle, Company, Countries },
+}: StartNodeDetailsProps) => {
+  // Define the fields to display
+  const fields = [
+    { label: 'Source', value: Source },
+    { label: 'Configuration', value: Configuration },
+    { label: 'Job Title', value: JobTitle },
+    { label: 'Company', value: Company },
+    { label: 'Countries', value: Countries },
+  ];
+
+  return (
+    <Box
+      component="section"
+      sx={{
+        p: 2,
+        borderRadius: 1,
+        backgroundColor: '#f7e9eb',
+        width: '300px',
+        boxSizing: 'border-box',
+        boxShadow: 1,
+        position: 'relative',
+      }}
+    >
+      {/* Label */}
+      <Typography variant="h6" color="primary" gutterBottom>
+        {label}
       </Typography>
-      <List disablePadding>
-        <ListItem disableGutters>
-          <ListItemText
-            primary={
-              <Typography variant="body2" color="primary">
-                <strong>{CustomerID}</strong>
-              </Typography>
-            }
-          />
-        </ListItem>
-        <ListItem disableGutters>
-          <ListItemText
-            primary={
-              <Typography variant="body2" color="primary">
-                <strong>{OrderID}:</strong>
-              </Typography>
-            }
-          />
-        </ListItem>
-        <ListItem disableGutters>
-          <ListItemText
-            primary={
-              <Typography variant="body2" color="primary">
-                <strong>{ItemsOrdered}</strong>
-              </Typography>
-            }
-          />
-        </ListItem>
-      </List>
+
+      {/* Data Fields */}
+      {fields.map((field) => (
+        <Typography
+          key={field.label}
+          variant="body2"
+          color="textPrimary"
+          sx={{ mb: 1 }}
+        >
+          <strong>{field.label}:</strong> {field.value}
+        </Typography>
+      ))}
+
+      {/* Handle */}
+      <Handle type="target" position={Position.Left} id="left" />
     </Box>
-    <Handle type="target" position={Position.Top} id="top" />
-  </Paper>
-);
+  );
+};
 
 export default StartNodeDetails;
