@@ -1,142 +1,124 @@
 // BranchOption.tsx
-import React from 'react';
-import { Formik, Form, FieldArray } from 'formik';
-import * as Yup from 'yup';
+import { useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
+import { Box, Button } from '@mui/material';
+import { useStore } from 'src/react-flow/store';
 import ConditionsList from './ConditionsList';
-import { Box, Button, Typography } from '@mui/material';
 
-// Define the shape of a single condition
-interface ConditionFormValues {
+interface Conditions {
   logicalOperator: string;
   nodeEvent: string;
   operator: string;
   value: string;
 }
 
-// Define the shape of a branch containing multiple conditions
-interface Branch {
-  conditions: ConditionFormValues[];
+interface Position {
+  x: number;
+  y: number;
 }
 
-// Define the overall form values
-interface FormValues {
-  branches: Branch[];
+interface Branches {
+  id: string;
+  type: string;
+  conditions: Conditions[];
+  position: Position;
 }
-
-// Validation schema using Yup
-const validationSchema = Yup.object({
-  branches: Yup.array()
-    .of(
-      Yup.object({
-        conditions: Yup.array()
-          .of(
-            Yup.object({
-              logicalOperator: Yup.string().required('Required'),
-              nodeEvent: Yup.string().required('Required'),
-              operator: Yup.string().required('Required'),
-              value: Yup.string().required('Required'),
-            })
-          )
-          .min(1, 'At least one condition is required')
-          .max(3, 'Maximum three conditions are allowed'),
-      })
-    )
-    .min(1, 'At least one branch is required')
-    .max(3, 'Maximum three branches are allowed'),
-});
 
 const BranchOption: React.FC = () => {
-  // Initial form values with one branch containing one condition
-  const initialValues: FormValues = {
-    branches: [
-      {
-        conditions: [
-          {
-            logicalOperator: '',
-            nodeEvent: '',
-            operator: '',
-            value: '',
-          },
-        ],
+  const [branches, setBranches] = useState<Branches[]>([]);
+
+  const { getLastParentID, getParentPosition, setNodes, nodes } = useStore(
+    useShallow((state) => ({
+      getLastParentID: state.getLastParentID,
+      getParentPosition: state.getParentPosition,
+      setNodes: state.setNodes,
+      nodes: state.nodes,
+    }))
+  );
+
+  const lastID = getLastParentID() || '1';
+  const lastPosition = getParentPosition() || { x: 0, y: 0 };
+
+  const addBranchHandler = () => {
+    const newBranch: Branches = {
+      id: `${lastID}.${branches.length + 1}`,
+      type: 'branchNode',
+      conditions: [],
+      position: { 
+        x: lastPosition.x - (60 * (branches.length + 1)), 
+        y: lastPosition.y + 100 
       },
-    ],
+    };
+    setBranches([...branches, newBranch]);
   };
 
-  // Handle form submission
-  const onSubmit = (values: FormValues) => {
-    alert(JSON.stringify(values, null, 2));
-    console.log(values);
+  const removeBranchHandler = (index: number) => {
+    const updatedBranches = branches.filter((_, i) => i !== index);
+    setBranches(updatedBranches);
+  };
+
+  const updateConditions = (index: number, newConditions: Conditions[]) => {
+    const updatedBranches = branches.map((branch, i) =>
+      i === index ? { ...branch, conditions: newConditions } : branch
+    );
+    setBranches(updatedBranches);
+  };
+
+  const handleSave = () => {
+    const newNodes = branches.map(branch => ({
+      id: branch.id,
+      type: branch.type,
+      position: branch.position,
+      data: { conditions: branch.conditions },
+    }));
+
+    setNodes([...nodes, ...newNodes]);
+    alert(JSON.stringify(newNodes, null, 2));
   };
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      {formik => (
-        <Form>
-          <Box>
-            <Typography variant="h6">Make Decisions</Typography>
-            <Typography>You can have multiple decisions in the flow.</Typography>
-
-            {/* Manage branches using FieldArray */}
-            <FieldArray name="branches">
-              {({ push, remove }) => (
-                <Box>
-                  {formik.values.branches.map((branch, branchIndex) => (
-                    <Box key={branchIndex} mb={4} p={2} border={1} borderRadius={2}>
-                      <Typography variant="subtitle1">Branch {branchIndex + 1}</Typography>
-                      
-                      {/* Render ConditionsList for each branch */}
-                      <ConditionsList branchIndex={branchIndex} />
-
-                      {/* Remove Branch Button */}
-                      <Box mt={2}>
-                        {formik.values.branches.length > 1 && (
-                          <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={() => remove(branchIndex)}
-                          >
-                            Remove Branch
-                          </Button>
-                        )}
-                      </Box>
-                    </Box>
-                  ))}
-
-                  {/* Add Branch Button */}
-                  {formik.values.branches.length < 3 && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() =>
-                        push({
-                          conditions: [
-                            {
-                              logicalOperator: '',
-                              nodeEvent: '',
-                              operator: '',
-                              value: '',
-                            },
-                          ],
-                        })
-                      }
-                    >
-                      + Add Branch
-                    </Button>
-                  )}
-                </Box>
-              )}
-            </FieldArray>
-
-            {/* Save Button */}
-            <Box mt={3}>
-              <Button type="submit" variant="contained" color="success">
-                Save
-              </Button>
-            </Box>
-          </Box>
-        </Form>
-      )}
-    </Formik>
+    <Box>
+      {branches.map((branch, index) => (
+        <ConditionsList
+          key={branch.id}
+          id={branch.id}
+          conditions={branch.conditions}
+          addConditionHandler={(condition) =>
+            updateConditions(index, [...branch.conditions, condition])
+          }
+          removeConditionHandler={(conditionIndex) => {
+            const updatedConditions = branch.conditions.filter(
+              (_, i) => i !== conditionIndex
+            );
+            updateConditions(index, updatedConditions);
+          }}
+          updateConditionHandler={(conditionIndex, updatedCondition) => {
+            const updatedConditions = branch.conditions.map((cond, i) =>
+              i === conditionIndex ? updatedCondition : cond
+            );
+            updateConditions(index, updatedConditions);
+          }}
+          removeBranchHandler={() => removeBranchHandler(index)}
+        />
+      ))}
+      <Box mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={addBranchHandler}
+          style={{ marginRight: '10px' }}
+        >
+          Add Branch
+        </Button>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

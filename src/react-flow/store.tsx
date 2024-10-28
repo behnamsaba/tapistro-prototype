@@ -1,7 +1,9 @@
 // store.tsx
 import type { Node, Edge, Connection, OnConnect, OnEdgesChange, OnNodesChange } from '@xyflow/react';
+
 import { create } from 'zustand';
 import { addEdge, applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
+
 import { initialNodes } from './Nodes';
 import { initialEdges } from './Edges';
 
@@ -31,6 +33,7 @@ type AppState = {
   setEdges: (edges: Edge[]) => void;
   onNodeClick: (event: React.MouseEvent, clickedNode: Node) => void;
   getLastParentID: () => string | null;
+  getParentPosition: () => { x: number; y: number } | null;
 };
 
 // Create the Zustand store
@@ -94,10 +97,14 @@ export const useStore = create<AppState>((set, get) => ({
       .map(node => node.id)
       .filter(id => !id.includes('-') && !id.includes('.'))
       .map(id => Number(id))
-      // eslint-disable-next-line no-restricted-globals
-      .filter(num => !isNaN(num));
+      .filter(num => !Number.isNaN(num));
     if (parentIds.length === 0) return null;
     return String(Math.max(...parentIds));
-  }
-
+  },
+  getParentPosition: () => {
+    const lastParentId = get().getLastParentID();
+    if (!lastParentId) return null;
+    const node = get().nodes.find(n => n.id === lastParentId);
+    return node ? node.position : null;
+  },
 }));

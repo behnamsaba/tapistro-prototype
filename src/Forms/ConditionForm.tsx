@@ -1,6 +1,7 @@
 // ConditionForm.tsx
-import React from 'react';
-import { useFormikContext } from 'formik';
+import React, { useEffect } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import {
   Box,
   Grid,
@@ -10,9 +11,9 @@ import {
   InputLabel,
   FormControl,
   FormHelperText,
+  Button,
 } from '@mui/material';
 
-// Define available options
 const logicalOperators = ['WHERE', 'AND', 'OR', 'NOT', 'IN', 'BETWEEN'];
 const nodeEvents = ['Event Source', 'Action Node'];
 const operators = [
@@ -28,128 +29,139 @@ const operators = [
   { symbol: 'if no', name: 'If No' },
 ];
 
-interface ConditionFormProps {
-  branchIndex: number;
-  conditionIndex: number;
+interface FormValues {
+  logicalOperator: string;
+  nodeEvent: string;
+  operator: string;
+  value: string;
 }
 
-const ConditionForm: React.FC<ConditionFormProps> = ({ branchIndex, conditionIndex }) => {
-  const { values, errors, touched, handleChange, handleBlur } = useFormikContext<any>();
+interface ConditionFormProps {
+  condition: FormValues;
+  onRemove: () => void;
+  onUpdate: (condition: FormValues) => void;
+}
 
-  // Define the path to the current condition's fields
-  const fieldPrefix = `branches.${branchIndex}.conditions.${conditionIndex}`;
+const validationSchema = Yup.object({
+  logicalOperator: Yup.string().required('Required'),
+  nodeEvent: Yup.string().required('Required'),
+  operator: Yup.string().required('Required'),
+  value: Yup.string().required('Required'),
+});
+
+const ConditionForm: React.FC<ConditionFormProps> = ({ condition, onRemove, onUpdate }) => {
+  const formik = useFormik<FormValues>({
+    initialValues: {
+      logicalOperator: condition.logicalOperator,
+      nodeEvent: condition.nodeEvent,
+      operator: condition.operator,
+      value: condition.value,
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      onUpdate(values);
+    },
+  });
+
+  // Update parent when formik values change and are valid
+  useEffect(() => {
+    if (formik.isValid) {
+      onUpdate(formik.values);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values, formik.isValid]);
 
   return (
-    <Box maxWidth="100%" m="auto">
-      <Grid container spacing={2} alignItems="flex-end">
-        {/* Logical Operator Field */}
-        <Grid item xs={2}>
+    <Box component="form" onSubmit={formik.handleSubmit} mb={2} p={2} border="1px solid #ccc" borderRadius="4px">
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={3}>
           <FormControl
             fullWidth
-            error={
-              touched.branches?.[branchIndex]?.conditions?.[conditionIndex]?.logicalOperator &&
-              Boolean(errors.branches?.[branchIndex]?.conditions?.[conditionIndex]?.logicalOperator)
-            }
+            error={formik.touched.logicalOperator && Boolean(formik.errors.logicalOperator)}
           >
             <InputLabel>Logical Operator</InputLabel>
             <Select
-              name={`${fieldPrefix}.logicalOperator`}
-              value={values.branches[branchIndex].conditions[conditionIndex].logicalOperator}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              name="logicalOperator"
+              value={formik.values.logicalOperator}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               label="Logical Operator"
             >
-              {logicalOperators.map(option => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {logicalOperators.map((op) => (
+                <MenuItem key={op} value={op}>
+                  {op}
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>
-              {touched.branches?.[branchIndex]?.conditions?.[conditionIndex]?.logicalOperator &&
-                errors.branches?.[branchIndex]?.conditions?.[conditionIndex]?.logicalOperator}
-            </FormHelperText>
+            {formik.touched.logicalOperator && formik.errors.logicalOperator && (
+              <FormHelperText>{formik.errors.logicalOperator}</FormHelperText>
+            )}
           </FormControl>
         </Grid>
-
-        {/* Node Event Field */}
         <Grid item xs={3}>
           <FormControl
             fullWidth
-            error={
-              touched.branches?.[branchIndex]?.conditions?.[conditionIndex]?.nodeEvent &&
-              Boolean(errors.branches?.[branchIndex]?.conditions?.[conditionIndex]?.nodeEvent)
-            }
+            error={formik.touched.nodeEvent && Boolean(formik.errors.nodeEvent)}
           >
             <InputLabel>Node Event</InputLabel>
             <Select
-              name={`${fieldPrefix}.nodeEvent`}
-              value={values.branches[branchIndex].conditions[conditionIndex].nodeEvent}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              name="nodeEvent"
+              value={formik.values.nodeEvent}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               label="Node Event"
             >
-              {nodeEvents.map(option => (
-                <MenuItem key={option} value={option}>
-                  {option}
+              {nodeEvents.map((event) => (
+                <MenuItem key={event} value={event}>
+                  {event}
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>
-              {touched.branches?.[branchIndex]?.conditions?.[conditionIndex]?.nodeEvent &&
-                errors.branches?.[branchIndex]?.conditions?.[conditionIndex]?.nodeEvent}
-            </FormHelperText>
+            {formik.touched.nodeEvent && formik.errors.nodeEvent && (
+              <FormHelperText>{formik.errors.nodeEvent}</FormHelperText>
+            )}
           </FormControl>
         </Grid>
-
-        {/* Operator Field */}
         <Grid item xs={3}>
           <FormControl
             fullWidth
-            error={
-              touched.branches?.[branchIndex]?.conditions?.[conditionIndex]?.operator &&
-              Boolean(errors.branches?.[branchIndex]?.conditions?.[conditionIndex]?.operator)
-            }
+            error={formik.touched.operator && Boolean(formik.errors.operator)}
           >
             <InputLabel>Operator</InputLabel>
             <Select
-              name={`${fieldPrefix}.operator`}
-              value={values.branches[branchIndex].conditions[conditionIndex].operator}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              name="operator"
+              value={formik.values.operator}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               label="Operator"
             >
-              {operators.map(option => (
-                <MenuItem key={option.symbol} value={option.symbol}>
-                  {option.name}
+              {operators.map((op) => (
+                <MenuItem key={op.symbol} value={op.symbol}>
+                  {op.name}
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>
-              {touched.branches?.[branchIndex]?.conditions?.[conditionIndex]?.operator &&
-                errors.branches?.[branchIndex]?.conditions?.[conditionIndex]?.operator}
-            </FormHelperText>
+            {formik.touched.operator && formik.errors.operator && (
+              <FormHelperText>{formik.errors.operator}</FormHelperText>
+            )}
           </FormControl>
         </Grid>
-
-        {/* Value Field */}
         <Grid item xs={3}>
           <TextField
-            name={`${fieldPrefix}.value`}
-            label="Value"
             fullWidth
-            value={values.branches[branchIndex].conditions[conditionIndex].value}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={
-              touched.branches?.[branchIndex]?.conditions?.[conditionIndex]?.value &&
-              Boolean(errors.branches?.[branchIndex]?.conditions?.[conditionIndex]?.value)
-            }
-            helperText={
-              touched.branches?.[branchIndex]?.conditions?.[conditionIndex]?.value &&
-              errors.branches?.[branchIndex]?.conditions?.[conditionIndex]?.value
-            }
+            name="value"
+            label="Value"
+            value={formik.values.value}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.value && Boolean(formik.errors.value)}
+            helperText={formik.touched.value && formik.errors.value}
           />
+        </Grid>
+        <Grid item xs={12} textAlign="right">
+          <Button variant="contained" color="error" onClick={onRemove}>
+            Remove Condition
+          </Button>
         </Grid>
       </Grid>
     </Box>

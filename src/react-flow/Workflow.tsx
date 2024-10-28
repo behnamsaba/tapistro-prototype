@@ -9,10 +9,11 @@ import {
 import Box from '@mui/material/Box';
 
 import TitleForm from 'src/Forms/TitleForm';
-import BranchOption from 'src/Forms/BranchOption';
 import FormRoutes from 'src/Forms/FormRoutes';
-import DecisionNodeForm from 'src/Forms/DecisionNodeForm';
+import BranchOption from 'src/Forms/BranchOption';
 import ConditionForm from 'src/Forms/ConditionForm';
+import ConditionsList from 'src/Forms/ConditionsList';
+import DecisionNodeForm from 'src/Forms/DecisionNodeForm';
 
 import ForkNode from 'src/components/ForkNode';
 import StartNode from 'src/components/StartNode';
@@ -22,6 +23,7 @@ import DecisionNode from 'src/components/DecisionNode';
 import StartNodeDetails from 'src/components/StartNodeDetails';
 import OrderAmountSelect from 'src/components/OrderAmountSelect';
 import ActionNodeDetails from 'src/components/ActionNodeDetails';
+import BranchNode from 'src/components/BranchNode';
 
 import { useStore } from './store';
 
@@ -35,6 +37,7 @@ const nodeTypes = {
   ForkNode,
   TerminalNode,
   DecisionNode,
+  BranchNode
 };
 
 

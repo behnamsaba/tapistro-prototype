@@ -5,12 +5,12 @@ import { Handle, Position } from '@xyflow/react';
 
 import { Box, Paper, Typography, List, ListItem, ListItemText } from '@mui/material';
 
-import { paperStyles, dividerStyles, typographyStyles } from '../styles';
+import { paperStyles, typographyStyles } from '../styles';
 
 interface Condition {
   logicalOperator: string;
   operator: string;
-  eventSource: string;
+  nodeEvent: string;
   value: string;
 }
 
@@ -21,7 +21,7 @@ interface BranchNodeProps extends NodeProps {
   };
 }
 
-const BranchNode = ({ data: { label, conditions } }: BranchNodeProps) => (
+const BranchNode: React.FC<BranchNodeProps> = ({ data: { label, conditions } } : BranchNodeProps) => (
   <Paper
     component="section"
     elevation={2}
@@ -46,7 +46,7 @@ const BranchNode = ({ data: { label, conditions } }: BranchNodeProps) => (
       {conditions.map((condition, index) => (
         <ListItem key={index}>
           <ListItemText
-            primary={`${condition.logicalOperator} ${condition.operator} ${condition.eventSource} ${condition.value}`}
+            primary={`${condition.logicalOperator} ${condition.operator} ${condition.nodeEvent} ${condition.value}`}
             sx={{ ...typographyStyles }}
           />
         </ListItem>

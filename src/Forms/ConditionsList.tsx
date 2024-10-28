@@ -1,77 +1,71 @@
 // ConditionsList.tsx
-import React from 'react';
-import { FieldArray } from 'formik';
-import { Box, Button, Stack } from '@mui/material';
+import { Box, Button } from '@mui/material';
+
 import ConditionForm from './ConditionForm';
 
-// Define the shape of a single condition
-interface ConditionFormValues {
+interface Conditions {
   logicalOperator: string;
   nodeEvent: string;
   operator: string;
   value: string;
 }
 
-// Define the shape of a branch containing multiple conditions
-interface Branch {
-  conditions: ConditionFormValues[];
-}
-
-// Define the overall form values
-interface FormValues {
-  branches: Branch[];
-}
-
 interface ConditionsListProps {
-  branchIndex: number;
+  id: string;
+  conditions: Conditions[];
+  addConditionHandler: (condition: Conditions) => void;
+  removeConditionHandler: (index: number) => void;
+  updateConditionHandler: (index: number, condition: Conditions) => void;
+  removeBranchHandler: () => void;
 }
 
-const ConditionsList: React.FC<ConditionsListProps> = ({ branchIndex }) => (
-    <FieldArray name={`branches.${branchIndex}.conditions`}>
-      {({ push, remove, form }) => {
-        const conditions = form.values.branches[branchIndex].conditions;
-        return (
-          <Box>
-            <Stack spacing={3}>
-              {conditions.map((condition, conditionIndex) => (
-                <Box key={conditionIndex} border={1} borderRadius={2} p={2}>
-                  {/* Render ConditionForm for each condition */}
-                  <ConditionForm branchIndex={branchIndex} conditionIndex={conditionIndex} />
+const ConditionsList = ({
+  id,
+  conditions,
+  addConditionHandler,
+  removeConditionHandler,
+  updateConditionHandler,
+  removeBranchHandler,
+} : ConditionsListProps) => {
+  const handleAddCondition = () => {
+    const newCondition: Conditions = {
+      logicalOperator: '',
+      nodeEvent: '',
+      operator: '',
+      value: '',
+    };
+    addConditionHandler(newCondition);
+  };
 
-                  {/* Remove Condition Button */}
-                  {conditions.length > 1 && (
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => remove(conditionIndex)}
-                    >
-                      Remove Condition
-                    </Button>
-                  )}
-                </Box>
-              ))}
+  const handleRemoveCondition = (index: number) => {
+    removeConditionHandler(index);
+  };
 
-              {/* Add Condition Button */}
-              {conditions.length < 3 && (
-                <Button
-                  variant="contained"
-                  onClick={() =>
-                    push({
-                      logicalOperator: '',
-                      nodeEvent: '',
-                      operator: '',
-                      value: '',
-                    })
-                  }
-                >
-                  + Add Condition
-                </Button>
-              )}
-            </Stack>
-          </Box>
-        );
-      }}
-    </FieldArray>
+  const handleUpdateCondition = (index: number, condition: Conditions) => {
+    updateConditionHandler(index, condition);
+  };
+
+  return (
+    <Box mb={4} p={2} border="1px solid #ddd" borderRadius="8px">
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <strong>Branch {id}</strong>
+        <Button variant="outlined" color="error" onClick={removeBranchHandler}>
+          Remove Branch
+        </Button>
+      </Box>
+      {conditions.map((condition, index) => (
+        <ConditionForm
+          key={index}
+          condition={condition}
+          onRemove={() => handleRemoveCondition(index)}
+          onUpdate={(updatedCondition) => handleUpdateCondition(index, updatedCondition)}
+        />
+      ))}
+      <Button variant="outlined" color="secondary" onClick={handleAddCondition}>
+        Add Condition
+      </Button>
+    </Box>
   );
+};
 
 export default ConditionsList;
