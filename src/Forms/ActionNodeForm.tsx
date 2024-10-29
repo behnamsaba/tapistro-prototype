@@ -1,3 +1,4 @@
+import React from 'react';
 import { useFormik } from 'formik';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -7,40 +8,37 @@ import {
   Button,
   Select,
   MenuItem,
-  TextField,
   InputLabel,
   Typography,
   FormControl,
-  FormHelperText
+  FormHelperText,
 } from '@mui/material';
 
 import { useStore } from 'src/react-flow/store';
 
 import { ActionNodeFormSchema } from './validationSchemas';
 
-const apiOptions = ['Apollo', 'G2', 'Factors.ai'];
+import type { ActionNodeFormValues } from './types';
 
-interface FormValues {
-  enrich: string;
-  api: string;
-}
+const apiOptions = ['Apollo', 'G2', 'Factors.ai'];
+const enrichOptions = ['Healthcare', 'IT', 'Fintech', 'Marketing', 'BioTech', 'Government'];
 
 const ActionNodeForm = () => {
   const { nodes, setNodes, setCurrentForm } = useStore(
     useShallow((state) => ({
       nodes: state.nodes,
       setNodes: state.setNodes,
-      setCurrentForm: state.setCurrentForm
+      setCurrentForm: state.setCurrentForm,
     }))
   );
 
-  const formik = useFormik<FormValues>({
+  const formik = useFormik<ActionNodeFormValues>({
     initialValues: {
       enrich: '',
       api: '',
     },
     validationSchema: ActionNodeFormSchema,
-    onSubmit: (values: FormValues) => {
+    onSubmit: (values) => {
       const nonHyphenIds = nodes
         .filter(node => !node.id.includes('-'))
         .map(node => parseInt(node.id, 10))
@@ -58,13 +56,13 @@ const ActionNodeForm = () => {
         type: 'ActionNode',
         data: {
           enrich: values.enrich,
-          API: values.api
+          API: values.api,
         },
         position: { x: 400, y: newY },
       };
 
       setNodes([...nodes, newNode]);
-      setCurrentForm("NextStepOption")
+      setCurrentForm("NextStepOption");
     },
   });
 
@@ -89,18 +87,31 @@ const ActionNodeForm = () => {
 
       <form onSubmit={formik.handleSubmit}>
         <Stack spacing={3}>
-          <TextField
-            id="enrich"
-            name="enrich"
-            label="Enrich"
+          <FormControl
             variant="outlined"
-            value={formik.values.enrich}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
             error={formik.touched.enrich && Boolean(formik.errors.enrich)}
-            helperText={formik.touched.enrich && formik.errors.enrich}
             fullWidth
-          />
+          >
+            <InputLabel id="enrich-label">Enrich</InputLabel>
+            <Select
+              labelId="enrich-label"
+              id="enrich"
+              name="enrich"
+              value={formik.values.enrich}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              label="Enrich"
+            >
+              {enrichOptions.map((enrich) => (
+                <MenuItem key={enrich} value={enrich}>
+                  {enrich}
+                </MenuItem>
+              ))}
+            </Select>
+            {formik.touched.enrich && formik.errors.enrich && (
+              <FormHelperText>{formik.errors.enrich}</FormHelperText>
+            )}
+          </FormControl>
 
           <FormControl
             variant="outlined"
@@ -133,8 +144,7 @@ const ActionNodeForm = () => {
             variant="contained"
             type="submit"
             disabled={formik.isSubmitting}
-            fullWidth
-            size="large"
+            size="medium"
           >
             Submit
           </Button>

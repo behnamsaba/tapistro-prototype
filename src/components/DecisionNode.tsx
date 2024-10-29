@@ -3,7 +3,7 @@ import type { NodeProps } from '@xyflow/react';
 
 import { Handle, Position } from '@xyflow/react';
 
-import { Paper, Stack, Divider, Typography, Box } from '@mui/material';
+import { Box, Paper, Stack, Divider, Typography } from '@mui/material';
 
 import { paperStyles, dividerStyles, typographyStyles } from '../styles';
 

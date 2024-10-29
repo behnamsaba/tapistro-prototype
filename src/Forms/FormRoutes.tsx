@@ -2,10 +2,11 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { useStore } from 'src/react-flow/store';
 
-import AddBranch from './BranchOption';
+import BranchOption from './BranchOption';
 import StartNodeForm from './StartNodeForm';
 import ActionNodeForm from './ActionNodeForm';
 import NextStepOption from './NextStepOption';
+import DecisionNodeForm from './DecisionNodeForm';
 import StartNodeFormDetails from './StartNodeFormDetails';
 
 const FormRoutes = () => {
@@ -29,10 +30,12 @@ const FormRoutes = () => {
       return <ActionNodeForm />;
       case 'NextStepOption':
         return <NextStepOption />;
-        case 'AddBranch':
-          return <AddBranch />;
+        case 'DecisionNodeForm':
+          return <DecisionNodeForm />;
+        case 'BranchOption':
+          return <BranchOption />;
     default:
-      return null; // Or you can return a default component/message
+      return null;
   }
 };
 

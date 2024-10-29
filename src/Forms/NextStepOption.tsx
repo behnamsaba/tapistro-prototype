@@ -24,8 +24,7 @@ const NextStepOption = () => {
         <Button variant="contained" onClick={() => setCurrentForm('ActionNodeForm')}>
           Action Node
         </Button>
-        <Button variant="contained"  onClick={() => setCurrentForm('ForkNodeForm')}>Fork Node</Button>
-        <Button variant="contained" onClick={() => setCurrentForm('TerminalNode')}>Terminal Node</Button>
+        {/* <Button variant="contained" onClick={() => setCurrentForm('TerminalNode')}>Terminal Node</Button> */}
       </Stack>
     </>
   );

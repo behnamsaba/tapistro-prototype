@@ -10,20 +10,17 @@ import Box from '@mui/material/Box';
 
 import TitleForm from 'src/Forms/TitleForm';
 import FormRoutes from 'src/Forms/FormRoutes';
-import BranchOption from 'src/Forms/BranchOption';
-import ConditionForm from 'src/Forms/ConditionForm';
-import ConditionsList from 'src/Forms/ConditionsList';
-import DecisionNodeForm from 'src/Forms/DecisionNodeForm';
+
 
 import ForkNode from 'src/components/ForkNode';
 import StartNode from 'src/components/StartNode';
 import ActionNode from 'src/components/ActionNode';
+import BranchNode from 'src/components/BranchNode';
 import TerminalNode from 'src/components/TerminalNode';
 import DecisionNode from 'src/components/DecisionNode';
 import StartNodeDetails from 'src/components/StartNodeDetails';
 import OrderAmountSelect from 'src/components/OrderAmountSelect';
 import ActionNodeDetails from 'src/components/ActionNodeDetails';
-import BranchNode from 'src/components/BranchNode';
 
 import { useStore } from './store';
 
@@ -63,11 +60,11 @@ function Workflow() {
         display="flex"
         flexDirection="column"
         alignItems="center"
-        width="75vw"
+        width="70vw"
         height="100%"
         border="1px dashed grey"
-        boxSizing="border-box" // Ensure padding and borders are included in the width and height
-        padding={2} // Optional padding for better spacing
+        boxSizing="border-box"
+        padding={2}
       >
         <TitleForm />
         <Box flexGrow={1} width="100%" mt={2}>
@@ -87,14 +84,13 @@ function Workflow() {
         </Box>
       </Box>
       <Box
-        width="25vw"
+        width="30vw"
         height="100%"
-        bgcolor="#f5f5f5" // Optional background color for distinction
+        bgcolor="#f5f5f5"
         boxSizing="border-box"
         padding={2}
-        overflow="none"
       >
-        <BranchOption />
+        <FormRoutes />
       </Box>
     </Box>
   );

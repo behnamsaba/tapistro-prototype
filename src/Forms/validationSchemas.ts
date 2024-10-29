@@ -42,3 +42,11 @@ export const StartNodeFormDetailsSchema = Yup.object({
     .oneOf(['United States', 'Germany', 'France', 'India'], 'Select a valid country')
     .required('Country is required'),
 });
+
+
+export const ConditionFormSchema = Yup.object({
+  logicalOperator: Yup.string().required('Required'),
+  nodeEvent: Yup.string().required('Required'),
+  operator: Yup.string().required('Required'),
+  value: Yup.string().required('Required'),
+});

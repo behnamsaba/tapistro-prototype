@@ -17,13 +17,11 @@ import { useStore } from 'src/react-flow/store';
 
 import { StartNodeFormSchema } from './validationSchemas';
 
+import type { StartNodeFormValues } from './types';
+
 // Define the available action options
 const actionOptions = ['Linkedin', 'Apollo', 'Factors.ai', 'R B2B', 'Clearbit'];
 
-// Define the shape of form values
-interface FormValues {
-  actionOption: string;
-}
 
 const StartNodeForm = () => {
   const { nodes, setNodes, setCurrentForm } = useStore(
@@ -35,12 +33,12 @@ const StartNodeForm = () => {
   );
 
   // Initialize Formik with initial values, validation schema, and submit handler
-  const formik = useFormik<FormValues>({
+  const formik = useFormik<StartNodeFormValues>({
     initialValues: {
       actionOption: '',
     },
     validationSchema: StartNodeFormSchema,
-    onSubmit: (values: FormValues) => {
+    onSubmit: (values: StartNodeFormValues) => {
       const updatedNodes = nodes.map(node =>
         node.id === "1"
           ? { ...node, data: { ...node.data, label: values.actionOption } }
@@ -103,8 +101,7 @@ const StartNodeForm = () => {
             variant="contained"
             type="submit"
             disabled={formik.isSubmitting}
-            fullWidth
-            size="large"
+            size="medium"
           >
             Next
           </Button>

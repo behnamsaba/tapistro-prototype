@@ -1,5 +1,5 @@
 // store.tsx
-import type { Node, Edge, Connection, OnConnect, OnEdgesChange, OnNodesChange } from '@xyflow/react';
+import type { Node, Edge, OnConnect, OnEdgesChange, OnNodesChange } from '@xyflow/react';
 
 import { create } from 'zustand';
 import { addEdge, applyNodeChanges, applyEdgeChanges } from '@xyflow/react';
@@ -107,4 +107,5 @@ export const useStore = create<AppState>((set, get) => ({
     const node = get().nodes.find(n => n.id === lastParentId);
     return node ? node.position : null;
   },
+  
 }));

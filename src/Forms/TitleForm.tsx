@@ -9,10 +9,7 @@ import { useStore } from 'src/react-flow/store';
 
 import { TitleFormSchema } from './validationSchemas';
 
-// Define the shape of form values
-interface TitleFormValues {
-  journeyName: string;
-}
+import type { TitleFormValues } from './types';
 
 const TitleForm = () => {
   const { titleFormHandler, setCurrentForm } = useStore(
@@ -38,13 +35,6 @@ const TitleForm = () => {
   return (
     <Box
       component="div"
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '80vw',
-        height: '10vh',
-      }}
     >
       <form onSubmit={formik.handleSubmit}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -61,7 +51,7 @@ const TitleForm = () => {
             sx={{ marginRight: 2 }}
           />
           <Button color="primary" variant="contained" type="submit">
-            Next
+            Save
           </Button>
         </Box>
       </form>

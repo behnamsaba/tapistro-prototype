@@ -1,5 +1,4 @@
-// DecisionNodeForm.tsx
-import { useFormik } from 'formik'; 
+import { useFormik } from 'formik';
 import { useShallow } from 'zustand/react/shallow';
 
 import {
@@ -12,47 +11,54 @@ import {
 
 import { useStore } from 'src/react-flow/store';
 
-interface FormValues {
-  description: string;
-}
+import type { DecisionNodeFormValues } from './types';
 
 const DecisionNodeForm = () => {
-  const { nodes, setNodes, setCurrentForm } = useStore(
+  const {
+    nodes, setNodes, setCurrentForm,
+    edges, setEdges, getLastParentID,
+    getParentPosition
+  } = useStore(
     useShallow((state) => ({
       nodes: state.nodes,
       setNodes: state.setNodes,
-      setCurrentForm: state.setCurrentForm
+      setCurrentForm: state.setCurrentForm,
+      edges: state.edges,
+      setEdges: state.setEdges,
+      getLastParentID: state.getLastParentID,
+      getParentPosition: state.getParentPosition
     }))
   );
 
-  const formik = useFormik<FormValues>({
+  const lastPosition = getParentPosition();
+
+  const formik = useFormik<DecisionNodeFormValues>({
     initialValues: {
       description: ''
     },
-    onSubmit: (values: FormValues) => {
-        const nonHyphenIds = nodes
-        .filter(node => !node.id.includes('-'))
-        .map(node => parseInt(node.id, 10))
-        .filter(id => !Number.isNaN(id));
-
-      const maxId = nonHyphenIds.length > 0 ? Math.max(...nonHyphenIds) : 0;
-      const newId = (maxId + 1).toString();
-
-      const yPositions = nodes.map(node => node.position.y);
-      const maxY = yPositions.length > 0 ? Math.max(...yPositions) : 0;
-      const newY = maxY + 100;
+    onSubmit: (values) => {
+      const maxId = getLastParentID();
+      const newId = (parseInt(maxId as string, 10) + 1).toString();
+      const newY: number = lastPosition!.y + 100;
 
       const newNode = {
         id: newId,
         type: 'DecisionNode',
-        data: {
-        description: values.description
-        },
+        data: { description: values.description },
         position: { x: 400, y: newY },
       };
 
+      const newEdge = {
+        id: `e-${maxId}-${newId}`,
+        source: `${maxId}`,
+        sourceHandle: 'bottom',
+        target: `${newId}`,
+        targetHandle: 'top',
+      };
+
       setNodes([...nodes, newNode]);
-      setCurrentForm('AddBranch'); 
+      setEdges([...edges, newEdge]);
+      setCurrentForm('BranchOption'); 
     },
   });
 
@@ -66,13 +72,8 @@ const DecisionNodeForm = () => {
         gap: 2,
       }}
     >
-      <Typography
-        variant="caption"
-        component="div"
-        noWrap
-        sx={{ fontSize: '0.9rem', textAlign: 'left', marginBottom: 2 }}
-      >
-        Please provide the details for the Decision Node
+      <Typography variant="h5">
+        Please provide the description for the Decision Node
       </Typography>
 
       <form onSubmit={formik.handleSubmit}>

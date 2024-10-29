@@ -1,32 +1,20 @@
-// ConditionsList.tsx
-import { Box, Button } from '@mui/material';
+import React from 'react';
+
+import { Box, Button, Typography, Divider } from '@mui/material';
 
 import ConditionForm from './ConditionForm';
 
-interface Conditions {
-  logicalOperator: string;
-  nodeEvent: string;
-  operator: string;
-  value: string;
-}
-
-interface ConditionsListProps {
-  id: string;
-  conditions: Conditions[];
-  addConditionHandler: (condition: Conditions) => void;
-  removeConditionHandler: (index: number) => void;
-  updateConditionHandler: (index: number, condition: Conditions) => void;
-  removeBranchHandler: () => void;
-}
+import type { Conditions, ConditionsListProps } from './types';
 
 const ConditionsList = ({
+  index,
   id,
   conditions,
   addConditionHandler,
   removeConditionHandler,
   updateConditionHandler,
   removeBranchHandler,
-} : ConditionsListProps) => {
+}: ConditionsListProps) => {
   const handleAddCondition = () => {
     const newCondition: Conditions = {
       logicalOperator: '',
@@ -34,36 +22,64 @@ const ConditionsList = ({
       operator: '',
       value: '',
     };
-    addConditionHandler(newCondition);
-  };
-
-  const handleRemoveCondition = (index: number) => {
-    removeConditionHandler(index);
-  };
-
-  const handleUpdateCondition = (index: number, condition: Conditions) => {
-    updateConditionHandler(index, condition);
+    if (conditions.length < 2) {
+      addConditionHandler(newCondition);
+    }
   };
 
   return (
-    <Box mb={4} p={2} border="1px solid #ddd" borderRadius="8px">
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <strong>Branch {id}</strong>
-        <Button variant="outlined" color="error" onClick={removeBranchHandler}>
+    <Box
+      mb={1}
+      p={1}
+      borderRadius={2}
+      boxShadow={3}
+      bgcolor="background.paper"
+      border="1px solid"
+      borderColor="grey.300"
+    >
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <Typography variant="h6" component="div">
+          Branch {index + 1}
+        </Typography>
+        <Button
+          variant="contained"
+          color="error"
+          onClick={removeBranchHandler}
+          size="small"
+        >
           Remove Branch
         </Button>
       </Box>
-      {conditions.map((condition, index) => (
-        <ConditionForm
-          key={index}
-          condition={condition}
-          onRemove={() => handleRemoveCondition(index)}
-          onUpdate={(updatedCondition) => handleUpdateCondition(index, updatedCondition)}
-        />
-      ))}
-      <Button variant="outlined" color="secondary" onClick={handleAddCondition}>
-        Add Condition
-      </Button>
+      <Divider />
+      <Box mt={3}>
+        {conditions.map((condition, idx) => (
+          <Box key={idx} mb={3}>
+            <ConditionForm
+              condition={condition}
+              onRemove={() => removeConditionHandler(idx)}
+              onUpdate={(updatedCondition) =>
+                updateConditionHandler(idx, updatedCondition)
+              }
+            />
+          </Box>
+        ))}
+        {conditions.length < 2 && (
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleAddCondition}
+            >
+              Add Condition
+            </Button>
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };

@@ -18,17 +18,11 @@ import { useStore } from 'src/react-flow/store';
 
 import { StartNodeFormDetailsSchema } from './validationSchemas';
 
+import type { StartNodeFormDetailsVal } from './types';
+
 // Define the available countries
 const countryOptions = ['United States', 'Germany', 'France', 'India'];
 
-// Define the shape of form values
-interface FormValues {
-  source: string;
-  configuration: string;
-  jobTitle: string;
-  company: string;
-  country: string;
-}
 
 const StartNodeFormDetails = () => {
   const { nodes, setNodes, setCurrentForm } = useStore(
@@ -40,7 +34,7 @@ const StartNodeFormDetails = () => {
   );
 
   // Initialize Formik with initial values, validation schema, and submit handler
-  const formik = useFormik<FormValues>({
+  const formik = useFormik<StartNodeFormDetailsVal>({
     initialValues: {
       source: '',
       configuration: '',
@@ -49,7 +43,7 @@ const StartNodeFormDetails = () => {
       country: '',
     },
     validationSchema: StartNodeFormDetailsSchema,
-    onSubmit: (values: FormValues) => {
+    onSubmit: (values: StartNodeFormDetailsVal) => {
       const updatedNodes = nodes.map(node =>
         node.id === "1-1"
           ? { ...node, data: { 
@@ -71,17 +65,14 @@ const StartNodeFormDetails = () => {
     <Box
       sx={{
         width: '100%',
-        maxWidth: 500,
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
       }}
     >
       <Typography
-        variant="caption"
-        component="div"
-        noWrap
-        sx={{ fontSize: '0.9rem', textAlign: 'left', marginBottom: 2 }}
+        variant="h6"
+        sx={{ fontSize: '0.9rem', textAlign: 'left'}}
       >
         Please provide the details for the Start Node
       </Typography>
@@ -171,7 +162,6 @@ const StartNodeFormDetails = () => {
             variant="contained"
             type="submit"
             disabled={formik.isSubmitting}
-            fullWidth
             size="large"
           >
             Next
