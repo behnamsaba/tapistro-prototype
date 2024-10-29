@@ -8,7 +8,7 @@ workflow Management UI on top of starter project [material-kit-react](https://gi
 - Start Node
 - Action Node
 - Decision Node
-- Fork Nodes
+- Branch Nodes
 - Terminal Node
 
 ## Quick start
