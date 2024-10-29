@@ -22,7 +22,11 @@ workflow Management UI on top of starter project [material-kit-react](https://gi
 
 ### Screenshot
 
-![image](https://github.com/user-attachments/assets/133e0888-8068-42cc-9021-58e54d55619c)
+![image](https://github.com/user-attachments/assets/3670c965-4814-4b5b-8911-af164a94e92d)
+
+![image](https://github.com/user-attachments/assets/17004bfd-4899-437a-bb82-3a92fae2b278)
+
+![image](https://github.com/user-attachments/assets/fe2b4e5d-e19c-468b-b5d7-d101a6b3a52b)
 
 
 ## License
